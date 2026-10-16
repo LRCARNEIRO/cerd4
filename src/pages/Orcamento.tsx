@@ -628,6 +628,14 @@ export default function Orcamento() {
             const programas = new Set(filtered.map(r => r.programa)).size;
             const orgaos = new Set(filtered.map(r => r.orgao)).size;
             const anosCobertura = [...new Set(filtered.map(r => r.ano))].sort();
+
+            // Composição: ações distintas (sem dobrar por órgão) e pares ação + órgão, por tipo
+            const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+            const extraRecs = filtered.filter(r => r.tipo_dotacao === 'extraorcamentario');
+            const acoesOrc = new Set(orcRecs.map(r => r.programa)).size;
+            const acoesExtra = new Set(extraRecs.map(r => r.programa)).size;
+            const paresOrc = new Set(orcRecs.map(r => `${r.programa}|${r.orgao}`)).size;
+            const paresExtra = new Set(extraRecs.map(r => `${r.programa}|${r.orgao}`)).size;
             const anosRange = anosCobertura.length > 0 ? `${anosCobertura[0]}–${anosCobertura[anosCobertura.length - 1]}` : '—';
 
             // Cenário label
@@ -643,13 +651,6 @@ export default function Orcamento() {
 
                 {/* ROW 0: Contagem de Registros e Ações */}
                 {(() => {
-                  const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
-                  const extraRecs = filtered.filter(r => r.tipo_dotacao === 'extraorcamentario');
-                  // Ações únicas = nomes distintos de ação (sem dobrar por órgão); pares = ação + órgão
-                  const acoesOrc = new Set(orcRecs.map(r => r.programa)).size;
-                  const acoesExtra = new Set(extraRecs.map(r => r.programa)).size;
-                  const paresOrc = new Set(orcRecs.map(r => `${r.programa}|${r.orgao}`)).size;
-                  const paresExtra = new Set(extraRecs.map(r => `${r.programa}|${r.orgao}`)).size;
                   const programasUnicos = new Set(filtered.map(r => programaKey(r.programa))).size;
                   return (
                     <div>
@@ -726,9 +727,9 @@ export default function Orcamento() {
                     </Card>
                     <Card className="border-l-4 border-l-muted-foreground/40">
                       <CardContent className="pt-4 pb-3">
-                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Estrutura</p>
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Estrutura (ações distintas)</p>
                         <p className="text-xl font-bold text-foreground mt-1">{programas} <span className="text-sm font-normal text-muted-foreground">ações</span></p>
-                        <p className="text-[10px] text-muted-foreground mt-1">{orgaos} órgãos · {filtered.length} registros</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">{acoesOrc} orçamentárias + {acoesExtra} extraorçamentárias · {paresOrc + paresExtra} pares ação+órgão</p>
                       </CardContent>
                     </Card>
                   </div>
