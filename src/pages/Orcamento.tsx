@@ -651,13 +651,6 @@ export default function Orcamento() {
 
                 {/* ROW 0: Contagem de Registros e Ações */}
                 {(() => {
-                  const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
-                  const extraRecs = filtered.filter(r => r.tipo_dotacao === 'extraorcamentario');
-                  // Ações únicas = nomes distintos de ação (sem dobrar por órgão); pares = ação + órgão
-                  const acoesOrc = new Set(orcRecs.map(r => r.programa)).size;
-                  const acoesExtra = new Set(extraRecs.map(r => r.programa)).size;
-                  const paresOrc = new Set(orcRecs.map(r => `${r.programa}|${r.orgao}`)).size;
-                  const paresExtra = new Set(extraRecs.map(r => `${r.programa}|${r.orgao}`)).size;
                   const programasUnicos = new Set(filtered.map(r => programaKey(r.programa))).size;
                   return (
                     <div>
