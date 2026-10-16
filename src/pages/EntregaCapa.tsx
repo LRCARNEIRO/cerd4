@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertTriangle, BarChart3, DollarSign, Gavel, Scale, ArrowRight } from 'lucide-react';
 import { ENTREGA_TITULO } from '@/components/entrega/EntregaContext';
+import uffLogo from '@/assets/uff.png.asset.json';
+import cdgLogo from '@/assets/cdg_logo_vertical.png.asset.json';
 
 const equipe = [
   { nome: 'Douglas Leite', funcao: 'Coordenação Geral', bio: 'Graduado em Direito e Doutor em História Social. Coordenador do INDEPIR, especialista em História Social da Escravidão e do Trabalho. Tem reconhecida atuação na coordenação de projetos relacionados a políticas públicas de igualdade racial.' },
@@ -24,8 +26,9 @@ export default function EntregaCapa() {
     <div className="min-h-screen bg-background">
       <header className="bg-sidebar text-sidebar-foreground">
         <div className="max-w-5xl mx-auto px-6 py-14 text-center space-y-6">
-          <div className="flex justify-center gap-8 min-h-12" aria-label="Logos institucionais">
-            {/* Logos UFF e CDG: inseridos quando os arquivos forem enviados */}
+          <div className="inline-flex items-center justify-center gap-8 rounded-xl bg-card px-8 py-4" aria-label="Logos institucionais">
+            <img src={uffLogo.url} alt="Universidade Federal Fluminense (UFF)" className="h-14 w-auto object-contain" />
+            <img src={cdgLogo.url} alt="CDG" className="h-20 w-auto object-contain" />
           </div>
           <p className="text-xs uppercase tracking-[0.2em] text-sidebar-foreground/70">Entrega de produto · Plano de Trabalho 62949849 · SEI 21290.000127/2026-28</p>
           <h1 className="text-2xl md:text-3xl font-semibold leading-snug uppercase">{ENTREGA_TITULO}</h1>

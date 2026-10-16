@@ -5,6 +5,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useIsEntrega } from '@/components/entrega/EntregaContext';
+import { EntregaSidebar } from '@/components/entrega/EntregaSidebar';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -15,6 +17,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, title, subtitle }: DashboardLayoutProps) {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isEntrega = useIsEntrega();
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -33,7 +36,9 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
           : 'relative',
         isMobile && !sidebarOpen && '-translate-x-full'
       )}>
-        <Sidebar onNavigate={isMobile ? () => setSidebarOpen(false) : undefined} />
+        {isEntrega
+          ? <EntregaSidebar onNavigate={isMobile ? () => setSidebarOpen(false) : undefined} />
+          : <Sidebar onNavigate={isMobile ? () => setSidebarOpen(false) : undefined} />}
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
