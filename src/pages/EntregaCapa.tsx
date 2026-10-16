@@ -30,12 +30,8 @@ function Atalho({ to, icon: Icon, titulo }: { to: string; icon: React.ElementTyp
 export default function EntregaCapa() {
   return (
     <div className="h-screen overflow-hidden bg-background">
-      {/* Leitura ampliada: mesmo zoom das demais telas, com largura/altura compensadas
-          para o conteúdo continuar ocupando exatamente uma tela, sem rolagem. */}
-      <div
-        className="flex flex-col"
-        style={{ zoom: 1.15, width: 'calc(100% / 1.15)', height: 'calc(100vh / 1.15)' }}
-      >
+      {/* Leitura ampliada: mesmo zoom das demais telas; h/w-full mantêm a capa em uma tela. */}
+      <div className="flex h-full w-full flex-col" style={{ zoom: 1.15 }}>
         <header className="bg-sidebar text-sidebar-foreground">
           <div className="max-w-6xl mx-auto px-6 py-[2.5vh] flex flex-col items-center gap-[1.5vh] text-center">
             <div className="inline-flex items-center justify-center gap-6 rounded-lg bg-card px-6 py-2" aria-label="Logos institucionais">
