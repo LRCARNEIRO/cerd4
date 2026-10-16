@@ -15,6 +15,8 @@ import type { ComplianceStatus } from '@/hooks/useLacunasData';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { ParagraphTextDialog } from '@/components/shared/ParagraphTextDialog';
 import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
+import { useIsEntrega } from '@/components/entrega/EntregaContext';
+
 import { ExportAllRecomendacoesButton } from './ExportAllRecomendacoesButton';
 import { ExportSingleRecomendacaoButton } from './ExportSingleRecomendacaoButton';
 
