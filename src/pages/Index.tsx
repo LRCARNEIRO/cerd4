@@ -6,6 +6,7 @@ import { BudgetChart } from '@/components/dashboard/BudgetChart';
 import { useOrcamentoCanonico } from '@/hooks/useLacunasData';
 import { dashboardBudgetSeries } from '@/utils/dashboardBudgetSeries';
 import { DualPerspectivePanel } from '@/components/dashboard/DualPerspectivePanel';
+import { EntregaResumoMetodologico } from '@/components/dashboard/EntregaResumoMetodologico';
 
 import { MethodologyExportButton } from '@/components/dashboard/MethodologyExportButton';
 import { ARTIGOS_CONVENCAO } from '@/utils/artigosConvencao';
@@ -131,6 +132,13 @@ export default function Index() {
           isLoading={isLoading || loadingEvol}
         />
       </div>
+
+      {/* Resumo rápido da dinâmica metodológica — apenas na versão produto */}
+      {isEntrega && (
+        <div className="mb-6">
+          <EntregaResumoMetodologico />
+        </div>
+      )}
 
       {/* Budget */}
       <div className="grid grid-cols-1 gap-6 mb-6">
