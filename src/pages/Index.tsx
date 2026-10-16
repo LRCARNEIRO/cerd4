@@ -64,7 +64,8 @@ export default function Index() {
       title="Painel de Monitoramento CERD"
       subtitle="IV Relatório do Brasil à Convenção sobre Eliminação de Discriminação Racial (2018-2025)"
     >
-      {/* Hero Section */}
+      {/* Hero Section — apenas na versão integral; na entrega a abertura própria já apresenta o painel */}
+      {!isEntrega && (
       <div className="header-gradient rounded-lg p-6 mb-6 animate-fade-in">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -117,6 +118,7 @@ export default function Index() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Dual Perspective Panel */}
       <div className="mb-6">
