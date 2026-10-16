@@ -31,28 +31,28 @@ export default function EntregaCapa() {
   return (
     <div className="h-screen overflow-hidden bg-background flex flex-col">
       <header className="bg-sidebar text-sidebar-foreground">
-        <div className="max-w-6xl mx-auto px-6 py-[3vh] flex flex-col items-center gap-[2vh] text-center">
+        <div className="max-w-6xl mx-auto px-6 py-[2.5vh] flex flex-col items-center gap-[1.5vh] text-center">
           <div className="inline-flex items-center justify-center gap-6 rounded-lg bg-card px-6 py-2" aria-label="Logos institucionais">
             <img src={uffLogo.url} alt="Universidade Federal Fluminense (UFF)" className="h-[7vh] w-auto object-contain" />
             <img src={cdgLogo.url} alt="CDG" className="h-[9vh] w-auto object-contain" />
           </div>
-          <h1 className="text-xl md:text-2xl font-semibold leading-snug uppercase max-w-4xl">{ENTREGA_TITULO}</h1>
+          <h1 className="text-lg md:text-xl font-semibold leading-snug uppercase max-w-4xl">{ENTREGA_TITULO}</h1>
           <Link
             to="/entrega/painel"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-medium text-primary-foreground hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-base font-medium text-primary-foreground hover:opacity-90"
           >
             Iniciar pelo Painel Geral <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-6xl mx-auto px-6 py-[3vh] flex flex-col justify-center gap-[3vh]">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-6 py-[2vh] flex flex-col justify-center gap-[2vh]">
         <section className="grid md:grid-cols-2 gap-4">
           <Card>
-            <CardContent className="p-6 space-y-3">
+            <CardContent className="p-5 space-y-2">
               <p className="text-sm font-semibold text-primary uppercase">Produto 1</p>
               <h2 className="text-lg font-semibold leading-snug">Painel de Monitoramento de Recomendações (Compliance ONU)</h2>
-              <p className="text-base text-muted-foreground leading-relaxed">
+              <p className="text-[15px] text-muted-foreground leading-snug">
                 Ferramenta gerencial para acompanhamento do cumprimento das recomendações do Comitê CERD ao Estado brasileiro,
                 com evidências técnicas vinculadas diretamente aos indicadores, ações orçamentárias e normativos monitorados.
               </p>
@@ -63,10 +63,10 @@ export default function EntregaCapa() {
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6 space-y-3">
+            <CardContent className="p-5 space-y-2">
               <p className="text-sm font-semibold text-primary uppercase">Produto 3</p>
               <h2 className="text-lg font-semibold leading-snug">Base de Evidências Estratégicas (Data-Lake de Indicadores)</h2>
-              <p className="text-base text-muted-foreground leading-relaxed">
+              <p className="text-[15px] text-muted-foreground leading-snug">
                 Repositório dinâmico com séries históricas, gráficos e tabelas processadas para o Relatório CERD IV, organizado
                 por eixos temáticos para subsidiar Notas Técnicas, discursos e justificativas orçamentárias.
               </p>
