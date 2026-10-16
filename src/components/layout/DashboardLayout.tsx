@@ -56,9 +56,14 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
           )}
         </Header>
         <main className="flex-1 overflow-y-auto p-3 md:p-6">
-          {isEntrega && <EntregaIntroPainel />}
-          {children}
-          {isEntrega && <EntregaNavegacao />}
+          {isEntrega ? (
+            /* Versão produto: leitura ampliada (inclui textos em px fixos). */
+            <div style={{ zoom: 1.15 }}>
+              <EntregaIntroPainel />
+              {children}
+              <EntregaNavegacao />
+            </div>
+          ) : children}
         </main>
       </div>
     </div>
