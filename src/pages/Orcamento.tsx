@@ -726,9 +726,9 @@ export default function Orcamento() {
                     </Card>
                     <Card className="border-l-4 border-l-muted-foreground/40">
                       <CardContent className="pt-4 pb-3">
-                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Estrutura</p>
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Estrutura (ações distintas)</p>
                         <p className="text-xl font-bold text-foreground mt-1">{programas} <span className="text-sm font-normal text-muted-foreground">ações</span></p>
-                        <p className="text-[10px] text-muted-foreground mt-1">{orgaos} órgãos · {filtered.length} registros</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">{acoesOrc} orçamentárias + {acoesExtra} extraorçamentárias · {paresOrc + paresExtra} pares ação+órgão</p>
                       </CardContent>
                     </Card>
                   </div>
