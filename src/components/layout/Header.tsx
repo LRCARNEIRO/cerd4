@@ -4,6 +4,7 @@ import { Bell, Search, User, Calendar, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsEntrega } from '@/components/entrega/EntregaContext';
 
 
 interface HeaderProps {
@@ -15,6 +16,7 @@ interface HeaderProps {
 export function Header({ title, subtitle, children }: HeaderProps) {
   const navigate = useNavigate();
   const { session, signOut } = useAuth();
+  const isEntrega = useIsEntrega();
   const [q, setQ] = useState('');
 
   const today = new Date().toLocaleDateString('pt-BR', {
@@ -50,6 +52,7 @@ export function Header({ title, subtitle, children }: HeaderProps) {
             <span className="capitalize">{today}</span>
           </div>
 
+          {!isEntrega && (<>
           <div className="relative hidden lg:block">
             <button
               type="button"
@@ -77,6 +80,7 @@ export function Header({ title, subtitle, children }: HeaderProps) {
           >
             <Search className="w-5 h-5 text-muted-foreground" />
           </Button>
+          </>)}
 
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="w-5 h-5 text-muted-foreground" />
