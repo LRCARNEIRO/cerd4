@@ -43,9 +43,12 @@ function periodSummary(records: DadoOrcamentario[]) {
   const dotP2 = p2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
   const pagoP1 = p1.reduce((s, r) => s + (Number(r.pago) || 0), 0);
   const pagoP2 = p2.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+  const liqP1 = p1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+  const liqP2 = p2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
   const varDot = dotP1 > 0 ? ((dotP2 - dotP1) / dotP1 * 100) : 0;
+  const varLiq = liqP1 > 0 ? ((liqP2 - liqP1) / liqP1 * 100) : 0;
   const varPago = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0;
-  return { dotP1, dotP2, pagoP1, pagoP2, varDot, varPago };
+  return { dotP1, dotP2, liqP1, liqP2, varLiq, pagoP1, pagoP2, varDot, varPago };
 }
 
 /* ─────────── VISÃO GERAL ─────────── */
@@ -78,6 +81,13 @@ export function generateVisaoGeralHTML(records: DadoOrcamentario[]): string {
         <div class="data-card"><div class="data-card-value">${fmtBRL(s.dotP1)}</div><div class="data-card-label">Dotação 2018–2022</div></div>
         <div class="data-card"><div class="data-card-value" style="color:#166534">${fmtBRL(s.dotP2)}</div><div class="data-card-label">Dotação 2023–2025</div></div>
         <div class="data-card"><div class="data-card-value" style="color:${s.varDot >= 0 ? '#166534' : '#991b1b'}">${s.varDot >= 0 ? '+' : ''}${s.varDot.toFixed(1)}%</div><div class="data-card-label">Variação Dotação</div></div>
+      </div>
+
+      <h2>Liquidado por Período</h2>
+      <div class="data-grid">
+        <div class="data-card"><div class="data-card-value">${fmtBRL(s.liqP1)}</div><div class="data-card-label">Liquidado 2018–2022</div></div>
+        <div class="data-card"><div class="data-card-value" style="color:#166534">${fmtBRL(s.liqP2)}</div><div class="data-card-label">Liquidado 2023–2025</div></div>
+        <div class="data-card"><div class="data-card-value" style="color:${s.varLiq >= 0 ? '#166534' : '#991b1b'}">${s.varLiq >= 0 ? '+' : ''}${s.varLiq.toFixed(1)}%</div><div class="data-card-label">Variação Liquidado</div></div>
       </div>
 
       <h2>Pago por Período</h2>
@@ -168,6 +178,11 @@ export function generateResumoComparativoHTML(records: DadoOrcamentario[]): stri
         <div class="data-card"><div class="data-card-value" style="color:#166534">${fmtBRL(s.pagoP2)}</div><div class="data-card-label">Pago 2023–2025</div></div>
         <div class="data-card"><div class="data-card-value" style="color:${s.varPago >= 0 ? '#166534' : '#991b1b'}">${s.varPago >= 0 ? '+' : ''}${s.varPago.toFixed(1)}%</div><div class="data-card-label">Variação</div></div>
       </div>
+      <div class="data-grid" style="margin-top:0.3cm">
+        <div class="data-card"><div class="data-card-value">${fmtBRL(s.liqP1)}</div><div class="data-card-label">Liquidado 2018–2022</div></div>
+        <div class="data-card"><div class="data-card-value" style="color:#166534">${fmtBRL(s.liqP2)}</div><div class="data-card-label">Liquidado 2023–2025</div></div>
+        <div class="data-card"><div class="data-card-value" style="color:${s.varLiq >= 0 ? '#166534' : '#991b1b'}">${s.varLiq >= 0 ? '+' : ''}${s.varLiq.toFixed(1)}%</div><div class="data-card-label">Variação</div></div>
+      </div>
 
       <h2>Perspectiva 2 — Sem SESAI</h2>
       <div class="data-grid">
@@ -179,6 +194,11 @@ export function generateResumoComparativoHTML(records: DadoOrcamentario[]): stri
         <div class="data-card"><div class="data-card-value">${fmtBRL(sNS.pagoP1)}</div><div class="data-card-label">Pago 2018–2022</div></div>
         <div class="data-card"><div class="data-card-value" style="color:#166534">${fmtBRL(sNS.pagoP2)}</div><div class="data-card-label">Pago 2023–2025</div></div>
         <div class="data-card"><div class="data-card-value" style="color:${sNS.varPago >= 0 ? '#166534' : '#991b1b'}">${sNS.varPago >= 0 ? '+' : ''}${sNS.varPago.toFixed(1)}%</div><div class="data-card-label">Variação</div></div>
+      </div>
+      <div class="data-grid" style="margin-top:0.3cm">
+        <div class="data-card"><div class="data-card-value">${fmtBRL(sNS.liqP1)}</div><div class="data-card-label">Liquidado 2018–2022</div></div>
+        <div class="data-card"><div class="data-card-value" style="color:#166534">${fmtBRL(sNS.liqP2)}</div><div class="data-card-label">Liquidado 2023–2025</div></div>
+        <div class="data-card"><div class="data-card-value" style="color:${sNS.varLiq >= 0 ? '#166534' : '#991b1b'}">${sNS.varLiq >= 0 ? '+' : ''}${sNS.varLiq.toFixed(1)}%</div><div class="data-card-label">Variação</div></div>
       </div>
 
       <h2>Evolução Ano a Ano — Total</h2>
@@ -204,6 +224,11 @@ export function generateRelatorioHTML(records: DadoOrcamentario[]): string {
         <div class="data-card"><div class="data-card-value">${fmtBRL(s.pagoP1)}</div><div class="data-card-label">Pago 2018–2022</div></div>
         <div class="data-card"><div class="data-card-value" style="color:#166534">${fmtBRL(s.pagoP2)}</div><div class="data-card-label">Pago 2023–2025</div></div>
         <div class="data-card"><div class="data-card-value" style="color:${s.varPago >= 0 ? '#166534' : '#991b1b'}">${s.varPago >= 0 ? '+' : ''}${s.varPago.toFixed(1)}%</div><div class="data-card-label">Variação</div></div>
+      </div>
+      <div class="data-grid" style="margin-top:0.3cm">
+        <div class="data-card"><div class="data-card-value">${fmtBRL(s.liqP1)}</div><div class="data-card-label">Liquidado 2018–2022</div></div>
+        <div class="data-card"><div class="data-card-value" style="color:#166534">${fmtBRL(s.liqP2)}</div><div class="data-card-label">Liquidado 2023–2025</div></div>
+        <div class="data-card"><div class="data-card-value" style="color:${s.varLiq >= 0 ? '#166534' : '#991b1b'}">${s.varLiq >= 0 ? '+' : ''}${s.varLiq.toFixed(1)}%</div><div class="data-card-label">Variação</div></div>
       </div>
       <h2>Detalhamento Ano a Ano</h2>
       ${buildAnoTable(records)}

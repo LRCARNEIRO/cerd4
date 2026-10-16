@@ -618,7 +618,10 @@ export default function Orcamento() {
             const dotP2 = p2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
             const pagoP1 = p1.reduce((s, r) => s + (Number(r.pago) || 0), 0);
             const pagoP2 = p2.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+            const liqP1 = p1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+            const liqP2 = p2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
             const varDot = dotP1 > 0 ? ((dotP2 - dotP1) / dotP1 * 100) : 0;
+            const varLiq = liqP1 > 0 ? ((liqP2 - liqP1) / liqP1 * 100) : 0;
             const varPago = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0;
 
             // Structure
@@ -757,6 +760,37 @@ export default function Orcamento() {
                         </p>
                         <p className="text-[10px] text-muted-foreground mt-1">
                           {Math.abs(varDot) > 100 ? `${(dotP2 / (dotP1 || 1)).toFixed(1)}x` : `${varDot >= 0 ? 'aumento' : 'queda'}`} entre períodos
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">🧾 Liquidado por Período</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <Card className="border-l-4 border-l-chart-4/60">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">2018–2022 (5 anos)</p>
+                        <p className="text-lg font-bold text-foreground mt-1">{formatCurrency(liqP1)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Valor liquidado</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-l-4 border-l-chart-4/60">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">2023–2025 (3 anos)</p>
+                        <p className="text-lg font-bold text-success mt-1">{formatCurrency(liqP2)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Valor liquidado</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-l-4" style={{ borderLeftColor: varLiq >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Variação Liquidado</p>
+                        <p className={`text-lg font-bold mt-1 ${varLiq >= 0 ? 'text-success' : 'text-destructive'}`}>
+                          {varLiq >= 0 ? '+' : ''}{varLiq.toFixed(1)}%
+                        </p>
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          {Math.abs(varLiq) > 100 ? `${(liqP2 / (liqP1 || 1)).toFixed(1)}x` : `${varLiq >= 0 ? 'aumento' : 'queda'}`} entre períodos
                         </p>
                       </CardContent>
                     </Card>
