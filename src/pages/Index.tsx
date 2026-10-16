@@ -141,9 +141,9 @@ export default function Index() {
       </div>
 
       {/* Budget */}
-      <div className="grid grid-cols-1 gap-6 mb-6">
+      {!isEntrega && <div className="grid grid-cols-1 gap-6 mb-6">
         <BudgetChart data={budgetSeries.orcamentario} extraData={budgetSeries.extraorcamentario} />
-      </div>
+      </div>}
 
       {!isEntrega && (<>
       {/* Methodology Export Button */}

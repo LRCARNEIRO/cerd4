@@ -32,6 +32,7 @@ import { MetodologiaFederalSection } from '@/components/estatisticas/orcamento/M
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
 import { UniversoBaseTab } from '@/components/estatisticas/orcamento/UniversoBaseTab';
+import { EntregaBudgetCharts } from '@/components/dashboard/EntregaBudgetCharts';
 import { DedupAuditPanel } from '@/components/estatisticas/orcamento/DedupAuditPanel';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { Switch } from '@/components/ui/switch';
@@ -578,6 +579,12 @@ export default function Orcamento() {
             <Layers className="w-4 h-4 mr-1" />
             Universo da Base
           </TabsTrigger>
+          {isEntrega && (
+          <TabsTrigger value="graficos">
+            <PieChart className="w-4 h-4 mr-1" />
+            Execução Orçamentária
+          </TabsTrigger>
+          )}
           {!isEntrega && (
           <TabsTrigger value="resumo">
             <PieChart className="w-4 h-4 mr-1" />
@@ -906,6 +913,11 @@ export default function Orcamento() {
         </TabsContent>
 
         {/* ===== UNIVERSO DA BASE ===== */}
+        {isEntrega && (
+        <TabsContent value="graficos">
+          <EntregaBudgetCharts />
+        </TabsContent>
+        )}
         <TabsContent value="universo">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-3" data-export-ignore="true">
             <div className="flex items-center gap-2">

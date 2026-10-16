@@ -55,10 +55,6 @@ export function EntregaResumoMetodologico() {
             <h2 className="text-lg font-bold text-foreground leading-snug">
               Resumo rápido — dinâmica metodológica integrada ao sistema
             </h2>
-            <p className="text-sm text-muted-foreground mt-1 max-w-3xl leading-relaxed">
-              Síntese do método que produz os índices acima: como a evidência é coletada, vinculada e
-              convertida em medida, aplicada à Convenção no recorte 2018–2025.
-            </p>
           </div>
         </div>
 
