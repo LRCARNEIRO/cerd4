@@ -1,5 +1,6 @@
 import { useMatrizAuditada } from '@/utils/matrizAuditada';
 import React, { useMemo, useState } from 'react';
+import { useIsEntrega } from '@/components/entrega/EntregaContext';
 import { useSearchParams } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';
@@ -304,7 +305,8 @@ type Esfera = 'federal';
 export default function Orcamento() {
   const { data: matrizAuditada } = useMatrizAuditada();
   const [orcSearchParams] = useSearchParams();
-  const [activeOrcTab, setActiveOrcTab] = useState(orcSearchParams.get('tab') || 'visao-geral');
+  const isEntrega = useIsEntrega();
+  const [activeOrcTab, setActiveOrcTab] = useState(isEntrega ? 'universo' : (orcSearchParams.get('tab') || 'visao-geral'));
   const { data: dadosBrutos, isLoading: orcLoading } = useDadosOrcamentarios();
   // Somatórios, cards e cruzamentos usam SOMENTE a base canônica (deduplicação lógica)
   const dadosOrcamentarios = useMemo(
@@ -566,30 +568,40 @@ export default function Orcamento() {
       {/* ===== SUB-ABAS ===== */}
       <Tabs value={activeOrcTab} onValueChange={setActiveOrcTab} className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
+          {!isEntrega && (
           <TabsTrigger value="visao-geral">
             <Building className="w-4 h-4 mr-1" />
             Visão Geral
           </TabsTrigger>
+          )}
           <TabsTrigger value="universo">
             <Layers className="w-4 h-4 mr-1" />
             Universo da Base
           </TabsTrigger>
+          {!isEntrega && (
           <TabsTrigger value="resumo">
             <PieChart className="w-4 h-4 mr-1" />
             Resumo Comparativo
           </TabsTrigger>
+          )}
+          {!isEntrega && (
           <TabsTrigger value="relatorio">
             <FileText className="w-4 h-4 mr-1" />
             Relatório
           </TabsTrigger>
+          )}
+          {!isEntrega && (
           <TabsTrigger value="metodologia">
             <BookOpen className="w-4 h-4 mr-1" />
             Metodologia
           </TabsTrigger>
+          )}
+          {!isEntrega && (
           <TabsTrigger value="artigos">
             <Scale className="w-4 h-4 mr-1" />
             Artigos ICERD
           </TabsTrigger>
+          )}
         </TabsList>
 
         {/* ===== VISÃO GERAL ===== */}
@@ -909,7 +921,7 @@ export default function Orcamento() {
 
           </div>
           <div id="export-orcamento-universo">
-            <DedupAuditPanel bruto={dadosBrutos?.length || 0} canonico={dadosOrcamentarios.length} valorSuprimido={stats?.valorSuprimido || 0} formatCurrencyFull={formatCurrencyFull} />
+            {!isEntrega && <DedupAuditPanel bruto={dadosBrutos?.length || 0} canonico={dadosOrcamentarios.length} valorSuprimido={stats?.valorSuprimido || 0} formatCurrencyFull={formatCurrencyFull} />}
             <UniversoBaseTab records={somenteCanonico ? currentRecords : currentRecordsBrutos} />
 
           </div>

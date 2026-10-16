@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useIsEntrega } from '@/components/entrega/EntregaContext';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -143,6 +144,7 @@ export default function Normativa() {
     }
   };
 
+  const isEntrega = useIsEntrega();
   return (
     <DashboardLayout
       title="Base Normativa/Institucional"
@@ -151,7 +153,7 @@ export default function Normativa() {
       {/* Export + GoBack button - top right prominent */}
       <div className="flex justify-end mb-4 gap-2">
         <ExportTabButtons targetSelector="#export-normativa" fileName="Base-Normativa-Institucional" compact />
-        <Button
+        {!isEntrega && <Button
           variant="destructive"
           size="lg"
           className="gap-2 shadow-lg"
@@ -159,7 +161,7 @@ export default function Normativa() {
         >
           <RotateCcw className="w-5 h-5" />
           GoBack / Restaurar Versão
-        </Button>
+        </Button>}
       </div>
       {/* Main tabs: Acervo vs Linha do Tempo */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -175,6 +177,7 @@ export default function Normativa() {
         </TabsList>
 
         <TabsContent value="acervo" className="space-y-6 mt-0">
+      {!isEntrega && (<>
       {/* Alert */}
       <Card className="mb-6 border-l-4 border-l-amber-500">
         <CardContent className="pt-6">
@@ -213,6 +216,7 @@ export default function Normativa() {
           </div>
         </CardContent>
       </Card>
+      </>)}
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { lazy, useState, useMemo } from 'react';
+import { useIsEntrega } from '@/components/entrega/EntregaContext';
 import { AlertTriangle, CheckCircle2, Database, Filter, Gauge, Minus, TrendingDown } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { ORIGEM_CONFIG } from '@/utils/classificarOrigemLacuna';
@@ -54,6 +55,7 @@ export default function Recomendacoes() {
   const [filterGrupo, setFilterGrupo] = useState<FocalGroupType | 'all'>('all');
   const [filterArtigo, setFilterArtigo] = useState<ArtigoConvencao | null>(null);
   const [activeTab, setActiveTab] = useState('relacao');
+  const isEntrega = useIsEntrega();
   
 
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
@@ -165,11 +167,11 @@ export default function Recomendacoes() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="relacao">📋 Relação Completa</TabsTrigger>
-          <TabsTrigger value="observacoes">Observações Finais</TabsTrigger>
-          <TabsTrigger value="follow-up">Follow-up 2026</TabsTrigger>
-          <TabsTrigger value="rgs">Recomendações Gerais</TabsTrigger>
-          <TabsTrigger value="durban">Durban</TabsTrigger>
-          <TabsTrigger value="respostas-cerd">Respostas às Críticas ({respostasCerd?.length || 0})</TabsTrigger>
+          {!isEntrega && <TabsTrigger value="observacoes">Observações Finais</TabsTrigger>}
+          {!isEntrega && <TabsTrigger value="follow-up">Follow-up 2026</TabsTrigger>}
+          {!isEntrega && <TabsTrigger value="rgs">Recomendações Gerais</TabsTrigger>}
+          {!isEntrega && <TabsTrigger value="durban">Durban</TabsTrigger>}
+          {!isEntrega && <TabsTrigger value="respostas-cerd">Respostas às Críticas ({respostasCerd?.length || 0})</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="relacao">
