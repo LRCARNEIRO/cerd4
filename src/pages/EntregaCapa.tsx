@@ -36,15 +36,17 @@ export default function EntregaCapa() {
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-10 space-y-10">
+        <div className="flex justify-center">
+          <Link to="/entrega/painel" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90">
+            Iniciar pelo Painel Geral <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
         <section className="grid md:grid-cols-2 gap-6">
           <Card>
             <CardContent className="p-6 space-y-3">
               <p className="text-xs font-semibold text-primary uppercase">Produto 1</p>
               <h2 className="text-lg font-semibold">Painel de Monitoramento de Recomendações (Compliance ONU)</h2>
               <p className="text-sm text-muted-foreground">Ferramenta gerencial para acompanhamento do cumprimento das recomendações do Comitê CERD ao Estado brasileiro, com evidências técnicas vinculadas diretamente aos indicadores, ações orçamentárias e normativos monitorados.</p>
-              <p className="text-xs text-muted-foreground border-l-2 border-primary pl-3">
-                Nota metodológica: a classificação prevista no Plano de Trabalho (Atendida / Parcial / Não Atendida) é operacionalizada pelos índices de Esforço e Impacto Evidenciado, com faixas Baixo, Intermediário e Alto, calculados a partir das evidências vinculadas a cada recomendação e agregados por Artigo da Convenção.
-              </p>
               <div className="space-y-2 pt-2">
                 <Atalho to="/entrega/recomendacoes" icon={AlertTriangle} titulo="Recomendações" />
                 <Atalho to="/entrega/artigos" icon={Scale} titulo="Artigos I–VII da Convenção" />
