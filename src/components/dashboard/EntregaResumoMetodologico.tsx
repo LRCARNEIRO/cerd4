@@ -1,7 +1,8 @@
+import { Fragment } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  ArrowDown, Database, Layers, Link2, Gauge, Scale, FileText,
+  ArrowRight, ArrowDown, Database, Layers, Link2, Gauge, Scale, FileText,
   BookOpen, ShieldCheck, BarChart3,
 } from 'lucide-react';
 
@@ -14,6 +15,27 @@ const ETAPAS = [
   { label: 'Agregação por artigos ICERD', icon: Scale },
   { label: 'Subsídio à redação do IV Relatório do Brasil ao CERD', icon: FileText },
 ];
+
+function Etapa({ etapa, numero }: { etapa: (typeof ETAPAS)[number]; numero: number }) {
+  const Icon = etapa.icon;
+  return (
+    <li className="flex items-center gap-3 p-2.5 rounded-md border border-border/70 bg-muted/30">
+      <Badge variant="outline" className="text-[10px] font-bold px-1.5 py-0 shrink-0">{numero}</Badge>
+      <Icon className="w-4 h-4 text-primary shrink-0" />
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-foreground leading-snug">
+        {etapa.label}
+      </p>
+    </li>
+  );
+}
+
+function ConectorVertical() {
+  return (
+    <div className="flex justify-center text-muted-foreground py-0.5" aria-hidden>
+      <ArrowDown className="w-4 h-4" />
+    </div>
+  );
+}
 
 /**
  * Resumo rápido da dinâmica metodológica integrada ao sistema.
@@ -56,30 +78,28 @@ export function EntregaResumoMetodologico() {
               Sumário Executivo
             </Badge>
           </div>
-          <ol className="flex flex-col gap-1">
-            {ETAPAS.map((etapa, i) => {
-              const Icon = etapa.icon;
-              const ultima = i === ETAPAS.length - 1;
-              return (
-                <li key={etapa.label} className="contents">
-                  <div className="flex items-center gap-3 p-2.5 rounded-md border border-border/70 bg-muted/30">
-                    <Badge variant="outline" className="text-[10px] font-bold px-1.5 py-0 shrink-0">
-                      {i + 1}
-                    </Badge>
-                    <Icon className="w-4 h-4 text-primary shrink-0" />
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-foreground leading-snug">
-                      {etapa.label}
-                    </p>
-                  </div>
-                  {!ultima && (
-                    <div className="flex justify-center text-muted-foreground py-0.5">
-                      <ArrowDown className="w-4 h-4" />
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-2 lg:items-center">
+            <ol className="flex flex-col gap-1">
+              {ETAPAS.slice(0, 3).map((etapa, i) => (
+                <Fragment key={etapa.label}>
+                  {i > 0 && <ConectorVertical />}
+                  <Etapa etapa={etapa} numero={i + 1} />
+                </Fragment>
+              ))}
+            </ol>
+            <div className="flex items-center justify-center text-muted-foreground px-1" aria-hidden>
+              <ArrowDown className="w-4 h-4 lg:hidden" />
+              <ArrowRight className="w-4 h-4 hidden lg:block" />
+            </div>
+            <ol className="flex flex-col gap-1">
+              {ETAPAS.slice(3).map((etapa, i) => (
+                <Fragment key={etapa.label}>
+                  {i > 0 && <ConectorVertical />}
+                  <Etapa etapa={etapa} numero={i + 4} />
+                </Fragment>
+              ))}
+            </ol>
+          </div>
         </div>
 
         {/* Camadas */}
