@@ -4,6 +4,10 @@ import { AlertTriangle, BarChart3, BookOpen, DollarSign, Scale, Gavel } from 'lu
 
 const grupos = [
   {
+    titulo: 'Visão integrada',
+    itens: [{ title: 'Painel Geral', href: '/entrega/painel', icon: BarChart3 }],
+  },
+  {
     titulo: 'Produto 1 · Painel de Monitoramento de Recomendações',
     itens: [
       { title: 'Recomendações', href: '/entrega/recomendacoes', icon: AlertTriangle },

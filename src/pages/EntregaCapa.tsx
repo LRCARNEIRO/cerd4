@@ -36,6 +36,11 @@ export default function EntregaCapa() {
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-10 space-y-10">
+        <div className="flex justify-center">
+          <Link to="/entrega/painel" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90">
+            Iniciar pelo Painel Geral <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
         <section className="grid md:grid-cols-2 gap-6">
           <Card>
             <CardContent className="p-6 space-y-3">
