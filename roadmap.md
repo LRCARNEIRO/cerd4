@@ -32,3 +32,7 @@
 - [x] Validar relatórios de Artigos, Recomendações e tabelas equivalentes, sem alterar dados nem publicar o anexo metodológico.
 - [x] Destacar todas as denominações de fonte em cartões por instituição, separando portais e preservando fontes sem URL; busca, filtros e HTML validados com 90 fontes estatísticas, 10 denominações orçamentárias e 32 referências normativas.
 - [x] Agregar cartões por portal, preservando denominações e links individuais; testes e página validados, com tabelas SIDRA reunidas e fontes sem endereço preservadas.
+
+## Versão de entrega (/entrega)
+- [x] Capa com título, Produtos 1 e 3, equipe e logos UFF/CDG
+- [x] Menu enxuto: Recomendações, Artigos, Bases Estatística/Orçamentária/Normativa (mesmos dados)

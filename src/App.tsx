@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { EntregaProvider } from "@/components/entrega/EntregaContext";
 import { LiveStatusSync } from "@/components/LiveStatusSync";
 
 
@@ -45,6 +46,7 @@ const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
 const Ecossistema = lazyWithRetry(() => import("./pages/Ecossistema"));
 const Artigos = lazyWithRetry(() => import("./pages/Artigos"));
 const Busca = lazyWithRetry(() => import("./pages/Busca"));
+const EntregaCapa = lazyWithRetry(() => import("./pages/EntregaCapa"));
 const AuthPage = lazyWithRetry(() => import("./pages/Auth"));
 
 
@@ -93,6 +95,12 @@ const App = () => (
               <Route path="/guia-auditoria" element={<GuiaAuditoria />} />
               <Route path="/artigos" element={<Artigos />} />
               <Route path="/busca" element={<Busca />} />
+              <Route path="/entrega" element={<EntregaCapa />} />
+              <Route path="/entrega/recomendacoes" element={<EntregaProvider><Recomendacoes /></EntregaProvider>} />
+              <Route path="/entrega/artigos" element={<EntregaProvider><Artigos /></EntregaProvider>} />
+              <Route path="/entrega/estatisticas" element={<EntregaProvider><Estatisticas /></EntregaProvider>} />
+              <Route path="/entrega/orcamento" element={<EntregaProvider><Orcamento /></EntregaProvider>} />
+              <Route path="/entrega/normativa" element={<EntregaProvider><Normativa /></EntregaProvider>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
