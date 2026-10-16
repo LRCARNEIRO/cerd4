@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsEntrega } from '@/components/entrega/EntregaContext';
 import { EntregaSidebar } from '@/components/entrega/EntregaSidebar';
+import { EntregaNavegacao, EntregaIntroPainel } from '@/components/entrega/EntregaNavegacao';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -55,7 +56,9 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
           )}
         </Header>
         <main className="flex-1 overflow-y-auto p-3 md:p-6">
+          {isEntrega && <EntregaIntroPainel />}
           {children}
+          {isEntrega && <EntregaNavegacao />}
         </main>
       </div>
     </div>

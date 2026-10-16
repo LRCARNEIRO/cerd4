@@ -1,9 +1,52 @@
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 /** Marca as telas renderizadas dentro da versão de entrega (/entrega). */
 const EntregaCtx = createContext(false);
 
+/** Sequência de navegação da entrega (capa → painel → produtos). */
+export const ENTREGA_SEQUENCIA = [
+  { href: '/entrega', titulo: 'Capa' },
+  { href: '/entrega/painel', titulo: 'Painel Geral' },
+  { href: '/entrega/recomendacoes', titulo: 'Recomendações' },
+  { href: '/entrega/artigos', titulo: 'Artigos I–VII' },
+  { href: '/entrega/estatisticas', titulo: 'Base Estatística' },
+  { href: '/entrega/orcamento', titulo: 'Base Orçamentária' },
+  { href: '/entrega/normativa', titulo: 'Base Normativa' },
+];
+
+/** Telas do sistema completo que têm equivalente na entrega. */
+const MAPA: Record<string, string> = {
+  '/': '/entrega/painel',
+  '/recomendacoes': '/entrega/recomendacoes',
+  '/artigos': '/entrega/artigos',
+  '/estatisticas': '/entrega/estatisticas',
+  '/orcamento': '/entrega/orcamento',
+  '/normativa': '/entrega/normativa',
+};
+
+/**
+ * Traduz, só no momento do clique e só dentro da entrega, links internos
+ * para a rota equivalente da entrega. Nenhuma URL salva, relatório ou planilha muda.
+ */
 export function EntregaProvider({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const a = (e.target as HTMLElement)?.closest?.('a');
+      if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+      const url = new URL(a.href, window.location.href);
+      if (url.origin !== window.location.origin || url.pathname.startsWith('/entrega')) return;
+      const destino = MAPA[url.pathname];
+      if (!destino) return;
+      e.preventDefault();
+      e.stopPropagation();
+      navigate(destino + url.search + url.hash);
+    };
+    document.addEventListener('click', onClick, true);
+    return () => document.removeEventListener('click', onClick, true);
+  }, [navigate]);
   return <EntregaCtx.Provider value={true}>{children}</EntregaCtx.Provider>;
 }
 

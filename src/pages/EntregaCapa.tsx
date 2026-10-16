@@ -42,9 +42,6 @@ export default function EntregaCapa() {
               <p className="text-xs font-semibold text-primary uppercase">Produto 1</p>
               <h2 className="text-lg font-semibold">Painel de Monitoramento de Recomendações (Compliance ONU)</h2>
               <p className="text-sm text-muted-foreground">Ferramenta gerencial para acompanhamento do cumprimento das recomendações do Comitê CERD ao Estado brasileiro, com evidências técnicas vinculadas diretamente aos indicadores, ações orçamentárias e normativos monitorados.</p>
-              <p className="text-xs text-muted-foreground border-l-2 border-primary pl-3">
-                Nota metodológica: a classificação prevista no Plano de Trabalho (Atendida / Parcial / Não Atendida) é operacionalizada pelos índices de Esforço e Impacto Evidenciado, com faixas Baixo, Intermediário e Alto, calculados a partir das evidências vinculadas a cada recomendação e agregados por Artigo da Convenção.
-              </p>
               <div className="space-y-2 pt-2">
                 <Atalho to="/entrega/recomendacoes" icon={AlertTriangle} titulo="Recomendações" />
                 <Atalho to="/entrega/artigos" icon={Scale} titulo="Artigos I–VII da Convenção" />
