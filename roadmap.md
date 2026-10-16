@@ -36,3 +36,5 @@
 ## Versão de entrega (/entrega)
 - [x] Capa com título, Produtos 1 e 3, equipe e logos UFF/CDG
 - [x] Menu enxuto: Recomendações, Artigos, Bases Estatística/Orçamentária/Normativa (mesmos dados)
+- [ ] Capa da entrega em uma única tela: sem a linha do Plano de Trabalho/SEI, equipe só com nomes e os 2 coordenadores em destaque.
+- [ ] Publicar a versão de entrega no endereço público.

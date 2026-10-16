@@ -5,60 +5,72 @@ import { ENTREGA_TITULO } from '@/components/entrega/EntregaContext';
 import uffLogo from '@/assets/uff.png.asset.json';
 import cdgLogo from '@/assets/cdg_logo_vertical.png.asset.json';
 
+const coordenadores = [
+  { nome: 'Douglas Leite', funcao: 'Coordenação Geral' },
+  { nome: 'Juliana Nunes Rodrigues', funcao: 'Coordenação Geral' },
+];
+
 const equipe = [
-  { nome: 'Douglas Leite', funcao: 'Coordenação Geral', bio: 'Graduado em Direito e Doutor em História Social. Coordenador do INDEPIR, especialista em História Social da Escravidão e do Trabalho. Tem reconhecida atuação na coordenação de projetos relacionados a políticas públicas de igualdade racial.' },
-  { nome: 'Juliana Nunes Rodrigues', funcao: 'Coordenação Geral', bio: 'Geógrafa, especialista em Geografia Política, com foco nas temáticas das desigualdades e democratização, ativismos, institucionalização, participação política e políticas públicas. Coordenou projetos e iniciativas aplicadas relacionadas a orçamentos sensíveis a gênero e raça.' },
-  { nome: 'Eduardo Celestino Cordeiro', funcao: 'Analista de Monitoramento Governamental', bio: 'Geógrafo e Coordenador de Estudos Sociais e Territoriais do Departamento de Informação e Inteligência Econômica do Município de São Luís – MA. Tem experiência em desenho de políticas públicas e atuação no desenvolvimento do projeto de regionalização do orçamento público de São Luís-MA.' },
-  { nome: 'Laura Carneiro', funcao: 'Analista de Monitoramento Governamental', bio: 'Economista, especialista em gestão pública e estatística. Atua na concepção e monitoramento das peças orçamentárias da capital maranhense desde 2014.' },
-  { nome: 'Henrique Silva', funcao: 'Pesquisador (Análise Legislativa)', bio: 'Tem experiência com história política, análise do discurso e análise de textos legislativos desde a graduação em História. Desde 2022, dedica-se ao tema das reformas eleitorais no Brasil, utilizando metodologias para a análise de textos de lei e processos políticos de deliberação e implementação. Tem experiência com mapeamento, seleção e catalogação de documentos oficiais em bancos de dados e a produção de sínteses e relações entre diferentes fontes discursivas originadas dos poderes Legislativo e Executivo.' },
+  'Eduardo Celestino Cordeiro',
+  'Laura Carneiro',
+  'Henrique Silva',
 ];
 
 function Atalho({ to, icon: Icon, titulo }: { to: string; icon: React.ElementType; titulo: string }) {
   return (
-    <Link to={to} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted transition-colors">
-      <Icon className="w-4 h-4 text-primary" /> <span className="flex-1">{titulo}</span> <ArrowRight className="w-4 h-4 text-muted-foreground" />
+    <Link
+      to={to}
+      className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs hover:bg-muted transition-colors"
+    >
+      <Icon className="w-3.5 h-3.5 text-primary" /> <span>{titulo}</span>
     </Link>
   );
 }
 
 export default function EntregaCapa() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="bg-sidebar text-sidebar-foreground">
-        <div className="max-w-5xl mx-auto px-6 py-14 text-center space-y-6">
-          <div className="inline-flex items-center justify-center gap-8 rounded-xl bg-card px-8 py-4" aria-label="Logos institucionais">
-            <img src={uffLogo.url} alt="Universidade Federal Fluminense (UFF)" className="h-14 w-auto object-contain" />
-            <img src={cdgLogo.url} alt="CDG" className="h-20 w-auto object-contain" />
+        <div className="max-w-5xl mx-auto px-6 py-5 flex flex-col items-center gap-3 text-center">
+          <div className="inline-flex items-center justify-center gap-6 rounded-lg bg-card px-6 py-2" aria-label="Logos institucionais">
+            <img src={uffLogo.url} alt="Universidade Federal Fluminense (UFF)" className="h-10 w-auto object-contain" />
+            <img src={cdgLogo.url} alt="CDG" className="h-14 w-auto object-contain" />
           </div>
-          <p className="text-xs uppercase tracking-[0.2em] text-sidebar-foreground/70">Entrega de produto · Plano de Trabalho 62949849 · SEI 21290.000127/2026-28</p>
-          <h1 className="text-2xl md:text-3xl font-semibold leading-snug uppercase">{ENTREGA_TITULO}</h1>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-6 py-10 space-y-10">
-        <div className="flex justify-center">
-          <Link to="/entrega/painel" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90">
+          <h1 className="text-base md:text-lg font-semibold leading-snug uppercase max-w-4xl">{ENTREGA_TITULO}</h1>
+          <Link
+            to="/entrega/painel"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+          >
             Iniciar pelo Painel Geral <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-        <section className="grid md:grid-cols-2 gap-6">
+      </header>
+
+      <main className="flex-1 w-full max-w-5xl mx-auto px-6 py-5 space-y-4">
+        <section className="grid md:grid-cols-2 gap-4">
           <Card>
-            <CardContent className="p-6 space-y-3">
-              <p className="text-xs font-semibold text-primary uppercase">Produto 1</p>
-              <h2 className="text-lg font-semibold">Painel de Monitoramento de Recomendações (Compliance ONU)</h2>
-              <p className="text-sm text-muted-foreground">Ferramenta gerencial para acompanhamento do cumprimento das recomendações do Comitê CERD ao Estado brasileiro, com evidências técnicas vinculadas diretamente aos indicadores, ações orçamentárias e normativos monitorados.</p>
-              <div className="space-y-2 pt-2">
+            <CardContent className="p-4 space-y-2">
+              <p className="text-[11px] font-semibold text-primary uppercase">Produto 1</p>
+              <h2 className="text-sm font-semibold leading-snug">Painel de Monitoramento de Recomendações (Compliance ONU)</h2>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Ferramenta gerencial para acompanhamento do cumprimento das recomendações do Comitê CERD ao Estado brasileiro,
+                com evidências técnicas vinculadas diretamente aos indicadores, ações orçamentárias e normativos monitorados.
+              </p>
+              <div className="flex flex-wrap gap-1.5 pt-1">
                 <Atalho to="/entrega/recomendacoes" icon={AlertTriangle} titulo="Recomendações" />
-                <Atalho to="/entrega/artigos" icon={Scale} titulo="Artigos I–VII da Convenção" />
+                <Atalho to="/entrega/artigos" icon={Scale} titulo="Artigos I–VII" />
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6 space-y-3">
-              <p className="text-xs font-semibold text-primary uppercase">Produto 3</p>
-              <h2 className="text-lg font-semibold">Base de Evidências Estratégicas (Data-Lake de Indicadores)</h2>
-              <p className="text-sm text-muted-foreground">Repositório dinâmico com séries históricas, gráficos e tabelas processadas para o Relatório CERD IV, organizado por eixos temáticos para subsidiar Notas Técnicas, discursos e justificativas orçamentárias.</p>
-              <div className="space-y-2 pt-2">
+            <CardContent className="p-4 space-y-2">
+              <p className="text-[11px] font-semibold text-primary uppercase">Produto 3</p>
+              <h2 className="text-sm font-semibold leading-snug">Base de Evidências Estratégicas (Data-Lake de Indicadores)</h2>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Repositório dinâmico com séries históricas, gráficos e tabelas processadas para o Relatório CERD IV, organizado
+                por eixos temáticos para subsidiar Notas Técnicas, discursos e justificativas orçamentárias.
+              </p>
+              <div className="flex flex-wrap gap-1.5 pt-1">
                 <Atalho to="/entrega/estatisticas" icon={BarChart3} titulo="Base Estatística" />
                 <Atalho to="/entrega/orcamento" icon={DollarSign} titulo="Base Orçamentária" />
                 <Atalho to="/entrega/normativa" icon={Gavel} titulo="Base Normativa" />
@@ -67,17 +79,18 @@ export default function EntregaCapa() {
           </Card>
         </section>
 
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Equipe técnica</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {equipe.map(p => (
-              <Card key={p.nome}>
-                <CardContent className="p-5 space-y-1">
-                  <p className="font-semibold">{p.nome}</p>
-                  <p className="text-xs text-primary font-medium">{p.funcao}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{p.bio}</p>
-                </CardContent>
-              </Card>
+        <section className="rounded-lg border bg-card px-4 py-3">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">Equipe técnica</h2>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            {coordenadores.map(p => (
+              <div key={p.nome} className="flex items-baseline gap-2">
+                <span className="text-sm font-semibold text-primary">{p.nome}</span>
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{p.funcao}</span>
+              </div>
+            ))}
+            <span className="hidden md:block h-4 w-px bg-border" aria-hidden="true" />
+            {equipe.map(nome => (
+              <span key={nome} className="text-sm text-foreground/90">{nome}</span>
             ))}
           </div>
         </section>
