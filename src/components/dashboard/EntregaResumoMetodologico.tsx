@@ -56,27 +56,24 @@ export function EntregaResumoMetodologico() {
               Sumário Executivo
             </Badge>
           </div>
-          <ol className="flex flex-col lg:flex-row lg:flex-wrap lg:items-stretch gap-2">
+          <ol className="flex flex-col gap-1">
             {ETAPAS.map((etapa, i) => {
               const Icon = etapa.icon;
               const ultima = i === ETAPAS.length - 1;
               return (
                 <li key={etapa.label} className="contents">
-                  <div className="flex-1 min-w-[190px] p-3 rounded-md border border-border/70 bg-muted/30">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className="text-[10px] font-bold px-1.5 py-0">
-                        {i + 1}
-                      </Badge>
-                      <Icon className="w-3.5 h-3.5 text-primary" />
-                    </div>
+                  <div className="flex items-center gap-3 p-2.5 rounded-md border border-border/70 bg-muted/30">
+                    <Badge variant="outline" className="text-[10px] font-bold px-1.5 py-0 shrink-0">
+                      {i + 1}
+                    </Badge>
+                    <Icon className="w-4 h-4 text-primary shrink-0" />
                     <p className="text-[11px] font-semibold uppercase tracking-wide text-foreground leading-snug">
                       {etapa.label}
                     </p>
                   </div>
                   {!ultima && (
-                    <div className="flex items-center justify-center px-1 text-muted-foreground">
-                      <ArrowDown className="w-4 h-4 lg:hidden" />
-                      <ArrowRight className="w-4 h-4 hidden lg:block" />
+                    <div className="flex justify-center text-muted-foreground py-0.5">
+                      <ArrowDown className="w-4 h-4" />
                     </div>
                   )}
                 </li>
