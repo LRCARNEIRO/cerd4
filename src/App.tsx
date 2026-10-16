@@ -1,4 +1,4 @@
-import { lazy, Suspense, ComponentType } from "react";
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,30 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { EntregaProvider } from "@/components/entrega/EntregaContext";
 import { LiveStatusSync } from "@/components/LiveStatusSync";
-
-
-/**
- * Após um novo deploy, o HTML em cache pode apontar para chunks que não existem mais.
- * Nesse caso recarregamos a página uma única vez para buscar o manifesto atualizado.
- */
-const RELOAD_KEY = "chunk-reload-attempt";
-
-function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>) {
-  return lazy(async () => {
-    try {
-      const mod = await factory();
-      window.sessionStorage.removeItem(RELOAD_KEY);
-      return mod;
-    } catch (error) {
-      if (!window.sessionStorage.getItem(RELOAD_KEY)) {
-        window.sessionStorage.setItem(RELOAD_KEY, "1");
-        window.location.reload();
-        return new Promise<{ default: T }>(() => {});
-      }
-      throw error;
-    }
-  });
-}
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
+import { EntregaRouter } from "@/components/entrega/EntregaPaginas";
 
 const Index = lazyWithRetry(() => import("./pages/Index"));
 const Estatisticas = lazyWithRetry(() => import("./pages/Estatisticas"));
@@ -46,7 +24,6 @@ const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
 const Ecossistema = lazyWithRetry(() => import("./pages/Ecossistema"));
 const Artigos = lazyWithRetry(() => import("./pages/Artigos"));
 const Busca = lazyWithRetry(() => import("./pages/Busca"));
-const EntregaCapa = lazyWithRetry(() => import("./pages/EntregaCapa"));
 const AuthPage = lazyWithRetry(() => import("./pages/Auth"));
 
 
@@ -95,13 +72,8 @@ const App = () => (
               <Route path="/guia-auditoria" element={<GuiaAuditoria />} />
               <Route path="/artigos" element={<Artigos />} />
               <Route path="/busca" element={<Busca />} />
-              <Route path="/entrega" element={<EntregaCapa />} />
-              <Route path="/entrega/painel" element={<EntregaProvider><Index /></EntregaProvider>} />
-              <Route path="/entrega/recomendacoes" element={<EntregaProvider><Recomendacoes /></EntregaProvider>} />
-              <Route path="/entrega/artigos" element={<EntregaProvider><Artigos /></EntregaProvider>} />
-              <Route path="/entrega/estatisticas" element={<EntregaProvider><Estatisticas /></EntregaProvider>} />
-              <Route path="/entrega/orcamento" element={<EntregaProvider><Orcamento /></EntregaProvider>} />
-              <Route path="/entrega/normativa" element={<EntregaProvider><Normativa /></EntregaProvider>} />
+              {/* Entrega: roteador keep-alive — telas visitadas ficam montadas e a próxima pré-carrega. */}
+              <Route path="/entrega/*" element={<EntregaProvider><EntregaRouter /></EntregaProvider>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

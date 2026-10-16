@@ -57,7 +57,7 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
         </Header>
         <main className="flex-1 overflow-y-auto p-3 md:p-6">
           {isEntrega ? (
-            /* Versão produto: leitura ampliada (inclui textos em px fixos). */
+            /* Versão produto: leitura ampliada (o zoom já ocupa a largura da tela). */
             <div style={{ zoom: 1.15 }}>
               <EntregaIntroPainel />
               {children}
