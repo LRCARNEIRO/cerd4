@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Revisar fontes, URLs e notas metodológicas de todas as 278 fichas estatísticas contra os cartões canônicos; entregar diagnóstico completo sem alterar bases.
+- [x] Revisar fontes, URLs e notas das 278 fichas contra os cartões canônicos; laudo entregue com transcrições, 18 URLs vazias, links adicionais em 136 fichas e notas compartilhadas ausentes em 106; bases preservadas.
 
 - [x] Explicitar médias das recomendações e dos artigos no Painel Geral e em Artigos; conferidas em tela e anexo.
 - [x] Corrigir a unidade do rótulo orçamentário por artigo, preservando contagens; Art. V exibe 88 pares ação + órgão e 202 registros Ação×Ano, inclusive no veredito.
