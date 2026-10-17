@@ -40,7 +40,7 @@ export default function EntregaCapa() {
             </div>
             <h1 className="text-lg md:text-xl font-semibold leading-snug uppercase max-w-4xl">{ENTREGA_TITULO}</h1>
             <Link
-              to="/entrega/painel"
+              to="/entregaMIR/painel"
               className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2 text-base font-medium text-primary-foreground hover:opacity-90"
             >
               Iniciar pelo Painel Geral <ArrowRight className="w-4 h-4" />
@@ -59,8 +59,8 @@ export default function EntregaCapa() {
                   com evidências técnicas vinculadas diretamente aos indicadores, ações orçamentárias e normativos monitorados.
                 </p>
                 <div className="flex flex-wrap gap-1.5 pt-1">
-                  <Atalho to="/entrega/recomendacoes" icon={AlertTriangle} titulo="Recomendações" />
-                  <Atalho to="/entrega/artigos" icon={Scale} titulo="Artigos I–VII" />
+                  <Atalho to="/entregaMIR/recomendacoes" icon={AlertTriangle} titulo="Recomendações" />
+                  <Atalho to="/entregaMIR/artigos" icon={Scale} titulo="Artigos I–VII" />
                 </div>
               </CardContent>
             </Card>
@@ -73,9 +73,9 @@ export default function EntregaCapa() {
                   por eixos temáticos para subsidiar Notas Técnicas, discursos e justificativas orçamentárias.
                 </p>
                 <div className="flex flex-wrap gap-1.5 pt-1">
-                  <Atalho to="/entrega/estatisticas" icon={BarChart3} titulo="Base Estatística" />
-                  <Atalho to="/entrega/orcamento" icon={DollarSign} titulo="Base Orçamentária" />
-                  <Atalho to="/entrega/normativa" icon={Gavel} titulo="Base Normativa" />
+                  <Atalho to="/entregaMIR/estatisticas" icon={BarChart3} titulo="Base Estatística" />
+                  <Atalho to="/entregaMIR/orcamento" icon={DollarSign} titulo="Base Orçamentária" />
+                  <Atalho to="/entregaMIR/normativa" icon={Gavel} titulo="Base Normativa" />
                 </div>
               </CardContent>
             </Card>

@@ -73,7 +73,7 @@ const App = () => (
               <Route path="/artigos" element={<Artigos />} />
               <Route path="/busca" element={<Busca />} />
               {/* Entrega: roteador keep-alive — telas visitadas ficam montadas e a próxima pré-carrega. */}
-              <Route path="/entrega/*" element={<EntregaProvider><EntregaRouter /></EntregaProvider>} />
+              <Route path="/entregaMIR/*" element={<EntregaProvider><EntregaRouter /></EntregaProvider>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
