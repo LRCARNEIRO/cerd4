@@ -419,7 +419,7 @@ ${renderRows(allItems)}
             allOrcamento={rawOrcamento}
             allNormativos={rawNormativos}
             overrides={evidenceOverrides[drilldownId] || emptyOverride()}
-            /* Versão produto (/entrega): somente visualização — sem edição de vínculos. */
+            /* Versão produto (/entregaMIR): somente visualização — sem edição de vínculos. */
             onOverridesChange={isEntrega ? undefined : (ov) => setEvidenceOverrides(prev => ({ ...prev, [drilldownId]: ov }))}
 
           />

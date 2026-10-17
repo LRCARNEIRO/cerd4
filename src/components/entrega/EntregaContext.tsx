@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-/** Marca as telas renderizadas dentro da versão de entrega (/entrega). */
+/** Marca as telas renderizadas dentro da versão de entrega (/entregaMIR). */
 const EntregaCtx = createContext(false);
 
 /** Sequência de navegação da entrega (capa → painel → produtos). */

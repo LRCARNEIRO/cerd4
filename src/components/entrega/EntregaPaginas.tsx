@@ -28,7 +28,7 @@ const Aguardando = () => (
   </div>
 );
 
-/** Roteador da entrega: capa em /entrega e conteúdo keep-alive nas demais rotas. */
+/** Roteador da entrega: capa em /entregaMIR e conteúdo keep-alive nas demais rotas. */
 export function EntregaRouter() {
   const { pathname } = useLocation();
   if (pathname === '/entregaMIR') {
