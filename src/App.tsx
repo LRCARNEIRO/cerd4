@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { EntregaProvider } from "@/components/entrega/EntregaContext";
 import { LiveStatusSync } from "@/components/LiveStatusSync";
@@ -45,6 +45,17 @@ const PageLoader = () => (
   </div>
 );
 
+/** O endereço antigo da entrega (/entrega) continua válido: leva a /entregaMIR preservando a aba aberta. */
+const EntregaRedirect = () => {
+  const { pathname, search, hash } = useLocation();
+  return (
+    <Navigate
+      to={`${pathname.replace(/^\/entrega/, "/entregaMIR")}${search}${hash}`}
+      replace
+    />
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -73,7 +84,8 @@ const App = () => (
               <Route path="/artigos" element={<Artigos />} />
               <Route path="/busca" element={<Busca />} />
               {/* Entrega: roteador keep-alive — telas visitadas ficam montadas e a próxima pré-carrega. */}
-              <Route path="/entrega/*" element={<EntregaProvider><EntregaRouter /></EntregaProvider>} />
+              <Route path="/entregaMIR/*" element={<EntregaProvider><EntregaRouter /></EntregaProvider>} />
+              <Route path="/entrega/*" element={<EntregaRedirect />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

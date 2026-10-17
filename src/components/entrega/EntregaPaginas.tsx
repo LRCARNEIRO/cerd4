@@ -14,12 +14,12 @@ const NotFound = lazyWithRetry(() => import('@/pages/NotFound'));
 
 /** Páginas de conteúdo da entrega (sem a capa), na ordem da sequência. */
 const PAGINAS: Array<{ href: string; C: ComponentType }> = [
-  { href: '/entrega/painel', C: Painel },
-  { href: '/entrega/recomendacoes', C: Recomendacoes },
-  { href: '/entrega/artigos', C: Artigos },
-  { href: '/entrega/estatisticas', C: Estatisticas },
-  { href: '/entrega/orcamento', C: Orcamento },
-  { href: '/entrega/normativa', C: Normativa },
+  { href: '/entregaMIR/painel', C: Painel },
+  { href: '/entregaMIR/recomendacoes', C: Recomendacoes },
+  { href: '/entregaMIR/artigos', C: Artigos },
+  { href: '/entregaMIR/estatisticas', C: Estatisticas },
+  { href: '/entregaMIR/orcamento', C: Orcamento },
+  { href: '/entregaMIR/normativa', C: Normativa },
 ];
 
 const Aguardando = () => (
@@ -28,10 +28,10 @@ const Aguardando = () => (
   </div>
 );
 
-/** Roteador da entrega: capa em /entrega e conteúdo keep-alive nas demais rotas. */
+/** Roteador da entrega: capa em /entregaMIR e conteúdo keep-alive nas demais rotas. */
 export function EntregaRouter() {
   const { pathname } = useLocation();
-  if (pathname === '/entrega') {
+  if (pathname === '/entregaMIR') {
     return <Suspense fallback={<Aguardando />}><EntregaCapa /></Suspense>;
   }
   return <EntregaPaginas />;

@@ -5,17 +5,17 @@ import { ENTREGA_SEQUENCIA } from './EntregaContext';
 
 /** Fio narrativo da entrega: do resultado (Produto 1) para a prova (Produto 3). */
 const PASSAGEM: Record<string, string> = {
-  '/entrega/painel':
+  '/entregaMIR/painel':
     'Você viu o retrato geral. A seguir: como está o cumprimento de cada uma das 42 recomendações do Comitê CERD.',
-  '/entrega/recomendacoes':
+  '/entregaMIR/recomendacoes':
     'Você viu o cumprimento recomendação por recomendação. A seguir: a mesma leitura reunida pelos sete artigos da Convenção.',
-  '/entrega/artigos':
+  '/entregaMIR/artigos':
     'Até aqui, a pergunta foi "como o Brasil está no cumprimento". A partir de agora, as três bases respondem "de onde vem isso": primeiro, os indicadores estatísticos.',
-  '/entrega/estatisticas':
+  '/entregaMIR/estatisticas':
     'Você viu as evidências estatísticas. A seguir: as ações orçamentárias que comprovam o esforço do Estado.',
-  '/entrega/orcamento':
+  '/entregaMIR/orcamento':
     'Você viu as evidências orçamentárias. Por fim: as normas que sustentam as políticas monitoradas.',
-  '/entrega/normativa':
+  '/entregaMIR/normativa':
     'Você chegou ao alicerce completo: os resultados apresentados no início se apoiam nestas três bases de evidências.',
 };
 
@@ -52,7 +52,7 @@ export function EntregaNavegacao() {
 /** Breve apresentação exibida no topo do Painel Geral da entrega. */
 export function EntregaIntroPainel() {
   const { pathname } = useLocation();
-  if (pathname !== '/entrega/painel') return null;
+  if (pathname !== '/entregaMIR/painel') return null;
   return (
     <div className="mb-6 rounded-lg border bg-card p-5 space-y-2">
       <p className="text-xs font-semibold uppercase text-primary">Visão integrada dos produtos</p>

@@ -41,7 +41,7 @@ function Etapa({ etapa, numero, mostrarConector }: {
 
 /**
  * Resumo rápido da dinâmica metodológica integrada ao sistema.
- * Exibido apenas na versão produto (/entrega), logo após a visão integrada do Painel Geral.
+ * Exibido apenas na versão produto (/entregaMIR), logo após a visão integrada do Painel Geral.
  */
 export function EntregaResumoMetodologico() {
   return (

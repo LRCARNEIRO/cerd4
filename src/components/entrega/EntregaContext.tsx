@@ -1,28 +1,28 @@
 import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-/** Marca as telas renderizadas dentro da versão de entrega (/entrega). */
+/** Marca as telas renderizadas dentro da versão de entrega (/entregaMIR). */
 const EntregaCtx = createContext(false);
 
 /** Sequência de navegação da entrega (capa → painel → produtos). */
 export const ENTREGA_SEQUENCIA = [
-  { href: '/entrega', titulo: 'Capa' },
-  { href: '/entrega/painel', titulo: 'Painel Geral' },
-  { href: '/entrega/recomendacoes', titulo: 'Recomendações' },
-  { href: '/entrega/artigos', titulo: 'Artigos I–VII' },
-  { href: '/entrega/estatisticas', titulo: 'Base Estatística' },
-  { href: '/entrega/orcamento', titulo: 'Base Orçamentária' },
-  { href: '/entrega/normativa', titulo: 'Base Normativa' },
+  { href: '/entregaMIR', titulo: 'Capa' },
+  { href: '/entregaMIR/painel', titulo: 'Painel Geral' },
+  { href: '/entregaMIR/recomendacoes', titulo: 'Recomendações' },
+  { href: '/entregaMIR/artigos', titulo: 'Artigos I–VII' },
+  { href: '/entregaMIR/estatisticas', titulo: 'Base Estatística' },
+  { href: '/entregaMIR/orcamento', titulo: 'Base Orçamentária' },
+  { href: '/entregaMIR/normativa', titulo: 'Base Normativa' },
 ];
 
 /** Telas do sistema completo que têm equivalente na entrega. */
 const MAPA: Record<string, string> = {
-  '/': '/entrega/painel',
-  '/recomendacoes': '/entrega/recomendacoes',
-  '/artigos': '/entrega/artigos',
-  '/estatisticas': '/entrega/estatisticas',
-  '/orcamento': '/entrega/orcamento',
-  '/normativa': '/entrega/normativa',
+  '/': '/entregaMIR/painel',
+  '/recomendacoes': '/entregaMIR/recomendacoes',
+  '/artigos': '/entregaMIR/artigos',
+  '/estatisticas': '/entregaMIR/estatisticas',
+  '/orcamento': '/entregaMIR/orcamento',
+  '/normativa': '/entregaMIR/normativa',
 };
 
 /**
@@ -37,7 +37,7 @@ export function EntregaProvider({ children }: { children: ReactNode }) {
       const a = (e.target as HTMLElement)?.closest?.('a');
       if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
       const url = new URL(a.href, window.location.href);
-      if (url.origin !== window.location.origin || url.pathname.startsWith('/entrega')) return;
+      if (url.origin !== window.location.origin || url.pathname.startsWith('/entregaMIR')) return;
       const destino = MAPA[url.pathname];
       if (!destino) return;
       e.preventDefault();
