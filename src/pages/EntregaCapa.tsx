@@ -33,18 +33,27 @@ export default function EntregaCapa() {
       {/* Leitura ampliada: mesmo zoom das demais telas; h/w-full mantêm a capa em uma tela. */}
       <div className="flex h-full w-full flex-col" style={{ zoom: 1.15 }}>
         <header className="bg-sidebar text-sidebar-foreground">
-          <div className="max-w-6xl mx-auto px-6 py-[1.5vh] flex flex-col items-center gap-[1vh] text-center">
-            <div className="inline-flex items-center justify-center gap-6 rounded-lg bg-card px-6 py-2" aria-label="Logos institucionais">
-              <img src={uffLogo.url} alt="Universidade Federal Fluminense (UFF)" className="h-[5.5vh] w-auto object-contain" />
-              <img src={cdgLogo.url} alt="CDG" className="h-[7vh] w-auto object-contain" />
+          {/* Logos nas laterais, ampliadas; título e botão centralizados entre elas. */}
+          <div className="w-full px-6 py-[1.5vh] grid grid-cols-[auto_1fr_auto] items-center gap-[2vw]">
+            <img
+              src={uffLogo.url}
+              alt="Universidade Federal Fluminense (UFF)"
+              className="h-[13vh] w-auto max-w-[20vw] object-contain justify-self-start"
+            />
+            <div className="flex flex-col items-center gap-[1.2vh] text-center justify-self-center">
+              <h1 className="text-lg md:text-xl font-semibold leading-snug uppercase max-w-3xl">{ENTREGA_TITULO}</h1>
+              <Link
+                to="/entregaMIR/painel"
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2 text-base font-medium text-primary-foreground hover:opacity-90"
+              >
+                Iniciar pelo Painel Geral <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
-            <h1 className="text-lg md:text-xl font-semibold leading-snug uppercase max-w-4xl">{ENTREGA_TITULO}</h1>
-            <Link
-              to="/entregaMIR/painel"
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2 text-base font-medium text-primary-foreground hover:opacity-90"
-            >
-              Iniciar pelo Painel Geral <ArrowRight className="w-4 h-4" />
-            </Link>
+            <img
+              src={cdgLogo.url}
+              alt="CDG"
+              className="h-[15vh] w-auto max-w-[16vw] object-contain justify-self-end"
+            />
           </div>
         </header>
 
