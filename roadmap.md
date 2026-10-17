@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Conferir fontes, URLs e notas das 202 fichas orçamentárias e 32 normativas contra conteúdo canônico; entregar diagnóstico sem alterar as bases.
+- [x] Conferir fontes, URLs e notas das 202 fichas orçamentárias e 32 normativas; laudo documental entregue: 9 POs ausentes, critérios sem transcrição literal e 32 resumos/enfoques normativos omitidos; fontes originais normativas preservadas e bases intactas.
 
 - [x] Revisar fontes, URLs e notas das 278 fichas contra os cartões canônicos; laudo entregue com transcrições, 18 URLs vazias, links adicionais em 136 fichas e notas compartilhadas ausentes em 106; bases preservadas.
 
