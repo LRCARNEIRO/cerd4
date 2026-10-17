@@ -229,6 +229,7 @@ export default function Normativa() {
             <p className="text-2xl font-bold">{totalDocumentos}</p>
           </CardContent>
         </Card>
+        {!isEntrega && (<>
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-2">
@@ -256,6 +257,7 @@ export default function Normativa() {
             <Progress value={percentualCompleto} className="mt-2" />
           </CardContent>
         </Card>
+        </>)}
       </div>
 
       {/* Categories - dynamic count */}
