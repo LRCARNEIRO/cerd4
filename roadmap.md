@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Conferir fontes, URLs e notas das 202 fichas orçamentárias e 32 normativas contra conteúdo canônico; entregar diagnóstico sem alterar as bases.
+
 - [x] Revisar fontes, URLs e notas das 278 fichas contra os cartões canônicos; laudo entregue com transcrições, 18 URLs vazias, links adicionais em 136 fichas e notas compartilhadas ausentes em 106; bases preservadas.
 
 - [x] Explicitar médias das recomendações e dos artigos no Painel Geral e em Artigos; conferidas em tela e anexo.
