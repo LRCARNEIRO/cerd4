@@ -219,6 +219,7 @@ export default function Normativa() {
       </>)}
 
       {/* Stats */}
+      {!isEntrega && (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardContent className="pt-6">
@@ -257,9 +258,24 @@ export default function Normativa() {
           </CardContent>
         </Card>
       </div>
+      )}
 
       {/* Categories - dynamic count */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 ${isEntrega ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
+        {isEntrega && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-start justify-between mb-3">
+                <div className="p-2 rounded-lg bg-muted">
+                  <FolderOpen className="w-5 h-5 text-muted-foreground" />
+                </div>
+              </div>
+              <h3 className="font-medium text-sm mb-1">Total de Documentos</h3>
+              <p className="text-xs text-muted-foreground mb-3">Acervo normativo cadastrado</p>
+              <p className="text-lg font-bold">{totalDocumentos} <span className="text-xs font-normal text-muted-foreground">documentos</span></p>
+            </CardContent>
+          </Card>
+        )}
         {categoriasNormativas.map(categoria => {
           const Icon = categoria.icon;
           const count = countByCategoria(categoria.id);
