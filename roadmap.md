@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Revisar fontes, URLs e notas metodológicas de todas as 278 fichas estatísticas contra os cartões canônicos; entregar diagnóstico completo sem alterar bases.
+
 - [x] Explicitar médias das recomendações e dos artigos no Painel Geral e em Artigos; conferidas em tela e anexo.
 - [x] Corrigir a unidade do rótulo orçamentário por artigo, preservando contagens; Art. V exibe 88 pares ação + órgão e 202 registros Ação×Ano, inclusive no veredito.
 - [x] Separar extraorçamentários no gráfico do Painel e incluir Liquidado; apresentação, valores reais de 2024 e 11 testes validados.
