@@ -28,7 +28,7 @@ const indicadores = allInd.map((i: any) => ({ ...i, codigo: cod.get(i.id) || '' 
 const orcAll = await all('dados_orcamentarios', 'id, programa, orgao, ano, esfera, fonte_dados, url_fonte, dotacao_autorizada, empenhado, liquidado, pago, tipo_dotacao, artigos_convencao, descritivo');
 const orcamento = dedupOrcamento(orcAll as any).canonico as any[];
 const normativos = await all('documentos_normativos', 'id, titulo, artigos_convencao, status, categoria, url_origem, created_at');
-const curados = await all('vinculos_evidencia_curados', 'artigo, recomendacao_id, base, ref_id, sub, nome');
+const curados = await all('vinculos_evidencia_curados', 'id, artigo, recomendacao_id, base, ref_id, sub, nome, linha, tipo_evidencia, funcao_metodo');
 const recs = await all('lacunas_identificadas', '*', q => q.order('prioridade', { ascending: true }).order('paragrafo', { ascending: true }));
 let ov: any[] = [];
 try { ov = await all('evidence_overrides'); } catch (e) { console.log('overrides err', String(e)); }
@@ -57,6 +57,14 @@ for (const rec of recs) {
 const arts: any = {};
 for (const r of res) for (const a of r.artigos) { (arts[a] ||= { e: [], i: [], recs: [] }); arts[a].e.push(r.ei.esforco); arts[a].i.push(r.ei.impacto); arts[a].recs.push(r.paragrafo); }
 const artOut = Object.fromEntries(Object.entries(arts).map(([a, b]: any) => [a, { esforco: mediaSimples(b.e), impacto: mediaSimples(b.i), faixaE: classificarFaixa(mediaSimples(b.e)), faixaI: classificarFaixa(mediaSimples(b.i)), n: b.e.length, recs: b.recs }]));
+const porLinha = curados.map((v: any) => {
+  if (v.base !== 'estatistica') return { id: v.id, unidades: [] };
+  const reg: any = indById.get(v.ref_id) || est(v);
+  const b: any = { id: reg.id, codigo: reg.codigo, nome: v.sub ? (v.nome || reg.nome) : reg.nome, categoria: reg.categoria, dados: reg.dados };
+  const us = v.sub ? [{ ...b, sub: v.sub, guardaChuva: reg.nome }] : expandIndicadorEvidencia(b);
+  return { id: v.id, codigo: reg.codigo || '', elegivel: isEvidenceEligibleIndicator(v.sub ? { ...reg, nome: v.nome || reg.nome } : reg), unidades: us.map((u: any) => ({ nome: u.nome, sub: u.sub || '', tendencia: tendenciaPadraoDetalhada(u).tendencia })) };
+});
+writeFileSync('/tmp/sistema_linhas.json', JSON.stringify(porLinha));
 writeFileSync('/tmp/sistema_extract.json', JSON.stringify({ res, arts: artOut, curados, overrides: ov, mediaE: mediaSimples(res.map(r => r.ei.esforco)), mediaI: mediaSimples(res.map(r => r.ei.impacto)) }));
 for (const r of res) console.log(r.paragrafo, r.ei.esforco, r.ei.impacto, r.ei.contagens.estatistica, r.ei.contagens.favoraveis + '/' + r.ei.contagens.comTendencia, r.ei.componentes.realizacaoEstatistica);
 console.log(JSON.stringify(Object.fromEntries(Object.entries(artOut).map(([a, v]: any) => [a, [v.esforco, v.impacto, v.n]]))));
