@@ -86,7 +86,7 @@ export default function Recomendacoes() {
         const totalGeral = (lacunas?.length) || 0;
         return (
           <>
-             <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
+             <div className={`grid grid-cols-2 md:grid-cols-6 gap-4 ${isEntrega ? 'mb-4' : 'mb-6'}`}>
                <Card>
                  <CardContent className="pt-4 pb-4 flex items-center gap-3">
                    <div className="p-2 bg-muted rounded-lg">
@@ -222,8 +222,48 @@ export default function Recomendacoes() {
                     <div className="p-3 bg-card rounded border">
                       <Badge className="mb-2">§36(a-d)</Badge>
                       <p className="text-sm">Uso excessivo de força por agentes da lei</p>
+              </div>
+              </div>
+
+            {/* Resumo de Impacto — apenas na versão produto, abaixo do resumo de Esforço */}
+            {isEntrega && (
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
+                <Card>
+                  <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                    <div className="p-2 bg-success/10 rounded-lg">
+                      <TrendingUp className="w-5 h-5 text-success" />
                     </div>
-                  </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Impacto Alto</p>
+                      <p className="text-xl font-bold text-success">{isLoading || loadingEvol ? '...' : impactoData.alto}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                    <div className="p-2 bg-warning/10 rounded-lg">
+                      <Minus className="w-5 h-5 text-warning" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Impacto Intermediário</p>
+                      <p className="text-xl font-bold text-warning">{isLoading || loadingEvol ? '...' : impactoData.intermediario}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                    <div className="p-2 bg-destructive/10 rounded-lg">
+                      <TrendingDown className="w-5 h-5 text-destructive" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Impacto Baixo</p>
+                      <p className="text-xl font-bold text-destructive">{isLoading || loadingEvol ? '...' : impactoData.baixo}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </>
                 </div>
 
                 <div className="p-4 bg-accent/5 border border-accent/20 rounded-lg">
