@@ -92,7 +92,7 @@ export function ExportAllRecomendacoesButton({
           <td>${diag?.linkedIndicadores?.length || 0}</td>
           <td>${diag?.linkedNormativos?.length || 0}</td>
           <td>${diag?.linkedOrcamento?.length || 0}</td>
-          <td><a href="./${fileName}" style="color:#2563eb">Abrir</a></td>
+          <td><a href="https://cerd4.lovable.app/entregaMIR/recomendacoes" style="color:#2563eb">Abrir</a></td>
         </tr>`);
       }
 
