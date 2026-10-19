@@ -1,5 +1,6 @@
 # Roadmap
 - [x] Ordenar o ZIP de Recomendações e seu índice (Observações Finais → RG → Durban, numeração crescente), incluir HTML unificado e verificar o download: 42 individuais + índice + unificado, mesmos valores, tabelas e links; 2 testes passaram.
+- [x] No índice do ZIP, coluna Relatório aponta para https://cerd4.lovable.app/entregaMIR/recomendacoes; botão é compartilhado, vale nas duas versões.
 
 - [x] Gerar matriz atualizada v3 com 2.122 vínculos atuais e mapa formal de 50 relações, incluindo cinco recomendações sem evidência; UUIDs, resumos e valores financeiros conferidos linha a linha, 252 fórmulas recalculadas sem erros; sistema intacto. Resultados estatísticos seguem v40 auditado; resumos divergentes dos relatórios anteriores não foram certificados nem alterados.
 
