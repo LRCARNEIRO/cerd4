@@ -175,6 +175,7 @@ export function generateRecomendacaoAuditHTML({
   th{background:#f1f5f9;font-weight:600;text-align:left}
   tr:nth-child(even) td{background:#fafafa}
   .quote{background:#fefce8;border-left:3px solid #ca8a04;padding:8px 12px;font-size:11px;font-style:italic;color:#3f3f46;margin:8px 0}
+  .vazio{background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;color:#7f1d1d;padding:10px 14px;border-radius:4px;font-size:12px;margin:8px 0}
   .footer{margin-top:2rem;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;text-align:center}
 </style></head><body>
 
@@ -198,28 +199,28 @@ ${ei ? `<div class="summary">
 
 <h2>📊 Indicadores (${linkedInd.length})</h2>
 <p style="font-size:10px;color:#64748b;margin:4px 0">Clique no nome do indicador para abrir o registro exato no sistema (com rolagem automática).</p>
-<table>
+${linkedInd.length === 0 ? `<div class="vazio">⚠️ <strong>Base Estatística sem evidências vinculadas:</strong> esta recomendação não possui nenhum registro da Base Estatística associado (0 registros). Componente estatística = 0 no cálculo.</div>` : `<table>
   <thead><tr>
     <th>Indicador</th><th style="text-align:center">Resultado</th>
   </tr></thead>
   <tbody>${indRows}</tbody>
-</table>
+</table>`}
 
 <h2>⚖️ Normativos (${linkedNorm.length})</h2>
-<table>
+${linkedNorm.length === 0 ? `<div class="vazio">⚠️ <strong>Base Normativa sem evidências vinculadas:</strong> esta recomendação não possui nenhum registro da Base Normativa associado (0 registros). Componente normativa = 0 no cálculo.</div>` : `<table>
   <thead><tr><th style="text-align:center">Ano</th><th>Órgão emissor</th><th>Tipo</th><th>Título (abre no sistema)</th><th style="text-align:center">Fonte oficial</th></tr></thead>
   <tbody>${normRows}</tbody>
-</table>
+</table>`}
 
 <h2>💰 Orçamento (${linkedOrc.length} ações)</h2>
-<table>
+${linkedOrc.length === 0 ? `<div class="vazio">⚠️ <strong>Base Orçamentária sem evidências vinculadas:</strong> esta recomendação não possui nenhum registro da Base Orçamentária associado (0 registros). Componente orçamentária = 0 no cálculo.</div>` : `<table>
   <thead><tr>
     <th style="text-align:center">Ano</th><th>Programa</th><th>Órgão</th>
     <th style="text-align:right">Dotação Autorizada</th><th style="text-align:right">Empenhado</th><th style="text-align:right">Liquidado</th>
     <th style="text-align:right">Pago</th><th style="text-align:center">Execução (%)</th>
   </tr></thead>
   <tbody>${orcRows}</tbody>
-</table>
+</table>`}
 
 <div class="footer">Sistema de Subsídios CERD IV — Evidências espelhadas do gerenciador de recomendações (SSoT)</div>
 </body></html>`;
