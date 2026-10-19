@@ -108,7 +108,7 @@ export function ExportAllRecomendacoesButton({
 </style></head><body>
 <h1>📋 Índice — Auditoria das Recomendações ONU</h1>
 <p style="font-size:11px;color:#64748b">${recomendacoes.length} recomendações · Gerado em ${new Date().toLocaleString('pt-BR')}</p>
-<p style="font-size:11px;color:#64748b">Cada recomendação possui um relatório HTML individual com Indicadores, Normativos e Orçamento vinculados (mesmo layout do Farol Drilldown). Clique em "Abrir" para visualizar.</p>
+<p style="font-size:11px;color:#64748b">Cada recomendação possui um relatório HTML individual com Indicadores, Normativos e Orçamento vinculados (mesmo layout do Farol Drilldown). A coluna "Relatório" aponta para a aba Recomendações da versão de entrega: <a href="https://cerd4.lovable.app/entregaMIR/recomendacoes" style="color:#2563eb">https://cerd4.lovable.app/entregaMIR/recomendacoes</a>.</p>
 <table>
   <thead><tr><th>§</th><th>Tema</th><th>Esforço</th><th>Impacto</th><th>📊 Ind.</th><th>⚖️ Norm.</th><th>💰 Orç.</th><th>Relatório</th></tr></thead>
   <tbody>${indexRows.join('')}</tbody>
