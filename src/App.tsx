@@ -56,12 +56,26 @@ const EntregaRedirect = () => {
   );
 };
 
+/**
+ * Endereços com barra final (ex.: /entregaMIR/) voltam à forma canônica sem a
+ * barra, preservando busca e âncora. Sem isso, a comparação exata de rotas da
+ * entrega não reconhece o caminho e a tela vira 404.
+ */
+const TrailingSlashRedirect = () => {
+  const { pathname, search, hash } = useLocation();
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    return <Navigate to={`${pathname.replace(/\/+$/, '')}${search}${hash}`} replace />;
+  }
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <TrailingSlashRedirect />
         <AuthProvider>
           <LiveStatusSync />
           <Suspense fallback={<PageLoader />}>
