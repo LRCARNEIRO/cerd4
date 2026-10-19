@@ -154,7 +154,7 @@ export default function Recomendacoes() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Impacto Alto</p>
-                      <p className="text-xl font-bold text-success">{isLoading || loadingEvol ? '...' : impactoData.alto}</p>
+                      <p className="text-xl font-bold text-success">{isLoading ? '...' : sensorSummary.faixasImpacto.alto}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -165,7 +165,7 @@ export default function Recomendacoes() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Impacto Intermediário</p>
-                      <p className="text-xl font-bold text-warning">{isLoading || loadingEvol ? '...' : impactoData.intermediario}</p>
+                      <p className="text-xl font-bold text-warning">{isLoading ? '...' : sensorSummary.faixasImpacto.intermediario}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -176,7 +176,7 @@ export default function Recomendacoes() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Impacto Baixo</p>
-                      <p className="text-xl font-bold text-destructive">{isLoading || loadingEvol ? '...' : impactoData.baixo}</p>
+                      <p className="text-xl font-bold text-destructive">{isLoading ? '...' : sensorSummary.faixasImpacto.baixo}</p>
                     </div>
                   </CardContent>
                 </Card>
