@@ -18,6 +18,7 @@ import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
 import { useIsEntrega } from '@/components/entrega/EntregaContext';
 
 import { ExportAllRecomendacoesButton } from './ExportAllRecomendacoesButton';
+import { ordenarRecomendacoes } from '@/utils/recomendacaoReportBundle';
 import { ExportSingleRecomendacaoButton } from './ExportSingleRecomendacaoButton';
 
 const MethodologyPanel = lazy(() => import('@/components/shared/MethodologyPanel').then(m => ({ default: m.MethodologyPanel })));
@@ -87,12 +88,9 @@ export function RelacaoRecomendacoesTab() {
   const grouped = useMemo(() => {
     if (!recomendacoes) return { cerd: [] as typeof recomendacoes, rg: [] as typeof recomendacoes, durban: [] as typeof recomendacoes };
     const result: Record<OrigemLacuna, typeof recomendacoes> = { cerd: [], rg: [], durban: [] };
-    for (const l of recomendacoes) {
+    for (const l of ordenarRecomendacoes(recomendacoes)) {
       result[classificarOrigemLacuna(l.paragrafo)].push(l);
     }
-    result.cerd.sort((a, b) => (parseInt(a.paragrafo.replace(/\D/g, '')) || 0) - (parseInt(b.paragrafo.replace(/\D/g, '')) || 0));
-    result.rg.sort((a, b) => a.paragrafo.localeCompare(b.paragrafo));
-    result.durban.sort((a, b) => a.paragrafo.localeCompare(b.paragrafo));
     return result;
   }, [recomendacoes]);
 
