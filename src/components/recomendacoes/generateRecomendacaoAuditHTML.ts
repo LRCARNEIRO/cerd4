@@ -199,7 +199,7 @@ ${ei ? `<div class="summary">
 
 <h2>📊 Indicadores (${linkedInd.length})</h2>
 <p style="font-size:10px;color:#64748b;margin:4px 0">Clique no nome do indicador para abrir o registro exato no sistema (com rolagem automática).</p>
-${linkedInd.length === 0 ? `<div class="vazio">⚠️ <strong>Base Estatística sem evidências vinculadas:</strong> esta recomendação não possui nenhum registro da Base Estatística associado (0 registros). Componente estatístico = 0 no cálculo.</div>` : `<table>
+${linkedInd.length === 0 ? `<div class="vazio">⚠️ <strong>Base Estatística sem evidências vinculadas:</strong> esta recomendação não possui nenhum registro da Base Estatística associado (0 registros). Componente estatístico do Esforço = 0.</div>` : `<table>
   <thead><tr>
     <th>Indicador</th><th style="text-align:center">Resultado</th>
   </tr></thead>
@@ -207,13 +207,13 @@ ${linkedInd.length === 0 ? `<div class="vazio">⚠️ <strong>Base Estatística 
 </table>`}
 
 <h2>⚖️ Normativos (${linkedNorm.length})</h2>
-${linkedNorm.length === 0 ? `<div class="vazio">⚠️ <strong>Base Normativa sem evidências vinculadas:</strong> esta recomendação não possui nenhum registro da Base Normativa associado (0 registros). Componente normativo = 0 no cálculo.</div>` : `<table>
+${linkedNorm.length === 0 ? `<div class="vazio">⚠️ <strong>Base Normativa sem evidências vinculadas:</strong> esta recomendação não possui nenhum registro da Base Normativa associado (0 registros). Componente normativo do Esforço = 0.</div>` : `<table>
   <thead><tr><th style="text-align:center">Ano</th><th>Órgão emissor</th><th>Tipo</th><th>Título (abre no sistema)</th><th style="text-align:center">Fonte oficial</th></tr></thead>
   <tbody>${normRows}</tbody>
 </table>`}
 
 <h2>💰 Orçamento (${linkedOrc.length} ações)</h2>
-${linkedOrc.length === 0 ? `<div class="vazio">⚠️ <strong>Base Orçamentária sem evidências vinculadas:</strong> esta recomendação não possui nenhum registro da Base Orçamentária associado (0 registros). Componente orçamentário = 0 no cálculo.</div>` : `<table>
+${linkedOrc.length === 0 ? `<div class="vazio">⚠️ <strong>Base Orçamentária sem evidências vinculadas:</strong> esta recomendação não possui nenhum registro da Base Orçamentária associado (0 registros). Componente orçamentário do Esforço = 0.</div>` : `<table>
   <thead><tr>
     <th style="text-align:center">Ano</th><th>Programa</th><th>Órgão</th>
     <th style="text-align:right">Dotação Autorizada</th><th style="text-align:right">Empenhado</th><th style="text-align:right">Liquidado</th>
