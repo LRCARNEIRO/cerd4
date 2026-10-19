@@ -48,3 +48,4 @@
 - [x] Menu enxuto: Recomendações, Artigos, Bases Estatística/Orçamentária/Normativa (mesmos dados)
 - [x] Capa da entrega em uma única tela: sem a linha do Plano de Trabalho/SEI, equipe só com nomes e os 2 coordenadores em destaque. Conferido em 1040×761 e 1280×800 sem rolagem.
 - [x] Publicar a versão de entrega no endereço público.
+- [ ] Endereços com barra final (ex.: https://cerd4.lovable.app/entregaMIR/) abrem o 404 em vez da tela: normalizar a barra em todas as rotas e conferir /entregaMIR/, /entregaMIR/recomendacoes/ e /recomendacoes/.
