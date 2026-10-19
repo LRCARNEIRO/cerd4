@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { generateRecomendacaoAuditHTML } from './generateRecomendacaoAuditHTML';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { buildExportLookups, safeFileName, triggerDownload } from './recomendacaoExportShared';
+import { ordenarRecomendacoes, unirAuditoriasRecomendacoes, type RecomendacaoReportDocument } from '@/utils/recomendacaoReportBundle';
 
 interface Props {
   recomendacoes: any[];
@@ -45,13 +46,15 @@ export function ExportAllRecomendacoesButton({
       });
 
       const zip = new JSZip();
+      const ordered = ordenarRecomendacoes(recomendacoes);
+      const reports: RecomendacaoReportDocument[] = [];
 
       // Index file
       const indexRows: string[] = [];
       const errors: string[] = [];
 
-      for (let i = 0; i < recomendacoes.length; i++) {
-        const rec = recomendacoes[i];
+      for (let i = 0; i < ordered.length; i++) {
+        const rec = ordered[i];
         // Yield to the UI thread between iterations so the spinner repaints
         // and the browser does not appear "frozen" on slow devices.
         if (i % 3 === 0) await new Promise(r => setTimeout(r, 0));
@@ -76,8 +79,9 @@ export function ExportAllRecomendacoesButton({
           errors.push(msg);
           html = `<!DOCTYPE html><html><body><h1>Erro ao gerar relatório</h1><pre>${msg}</pre></body></html>`;
         }
-        const fileName = `paragrafo-${safeFileName(rec.paragrafo || String(i))}-${safeFileName(rec.tema || 'sem-tema')}.html`;
+        const fileName = `${String(i + 1).padStart(3, '0')}-paragrafo-${safeFileName(rec.paragrafo || String(i))}-${safeFileName(rec.tema || 'sem-tema')}.html`;
         zip.file(fileName, html);
+        reports.push({ fileName, html });
 
         const ei = diag?.auditoria.esforcoImpacto;
         indexRows.push(`<tr>
@@ -111,6 +115,7 @@ export function ExportAllRecomendacoesButton({
 </table>
 </body></html>`;
       zip.file('00-INDICE.html', indexHtml);
+      zip.file('00-AUDITORIAS-UNIFICADAS.html', unirAuditoriasRecomendacoes(indexHtml, reports));
 
       console.log('[ExportAll] generating zip blob…', { files: Object.keys(zip.files).length, errors: errors.length });
       const blob = await zip.generateAsync({ type: 'blob' }, (meta) => {

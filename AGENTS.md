@@ -1,4 +1,5 @@
 # Project decisions
+- Recommendation bulk exports and the screen share a document/numeric sorter; the unified HTML assembles the exact individually generated bodies, so ordering and evidence cannot drift between formats.
 
 - Dashboard budget charts split the canonical inventory by tipo_dotacao before yearly aggregation; LOA shows authorized, committed, liquidated and paid amounts, while extra-LOA shows paid amounts separately to avoid implying an execution rate.
 
