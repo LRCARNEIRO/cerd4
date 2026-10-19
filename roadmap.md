@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Gerar matriz atualizada v3 com 2.122 vínculos atuais e mapa formal de 50 relações, incluindo cinco recomendações sem evidência; UUIDs, resumos e valores financeiros conferidos linha a linha, 252 fórmulas recalculadas sem erros; sistema intacto. Resultados estatísticos seguem v40 auditado; resumos divergentes dos relatórios anteriores não foram certificados nem alterados.
+
 - [x] Refazer inventário v37 com somente três bases finais (278 estatísticas, 202 orçamentárias, 32 normativas), fontes/notas/POs documentados; valores e leituras preservados, duas fórmulas conferidas sem erros.
 
 - [x] Conferir fontes, URLs e notas das 202 fichas orçamentárias e 32 normativas; laudo documental entregue: 9 POs ausentes, critérios sem transcrição literal e 32 resumos/enfoques normativos omitidos; fontes originais normativas preservadas e bases intactas.
